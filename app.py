@@ -10,7 +10,8 @@ from langchain_groq import ChatGroq
 from langchain.tools import tool
 from langgraph.checkpoint.memory import InMemorySaver
 from langchain.agents import create_agent
-import streamlit as st               
+import streamlit as st 
+import os 
 
 
 ## data in st session 
@@ -76,7 +77,7 @@ def process_document(path):
     )
     
         # 6. Load LLM
-    import os
+    
     llm = ChatGroq(
         model="llama-3.1-8b-instant",
         api_key=os.getenv("GROQ_API_KEY")
@@ -147,10 +148,12 @@ if not st.session_state.document_uploaded:
     uploaded = st.file_uploader(label="Select PDF files",type=["pdf"],accept_multiple_files= True) 
     if uploaded:
         with st.spinner("Processing...."):
-            path="./doc_files/"
+            path = "./doc_files/"
+            os.makedirs(path, exist_ok=True)
+            
             for file in uploaded:
-                with open(path + file.name,"wb") as f:
-                  f.write(file.getvalue())
+             with open(os.path.join(path, file.name), "wb") as f:
+                f.write(file.getvalue())
             
             process_document(path) ## it process our document
             st.rerun()  ##this is not refress ouver page , it refress our variable and  reload   UI 
